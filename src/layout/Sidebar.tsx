@@ -1,14 +1,7 @@
 import type { ReactNode } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { UserRole } from "../enums/user-role";
-import {
-  LayoutDashboard,
-  UserPlus,
-  LogOut,
-  Settings,
-  Shield,
-  BarChart3,
-} from "lucide-react";
+import { LayoutDashboard, UserPlus, LogOut, Shield } from "lucide-react";
 
 interface Props {
   children: ReactNode;
