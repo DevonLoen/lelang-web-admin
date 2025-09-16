@@ -2,65 +2,70 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState("jerry@gmail.com");
-  const [password, setPassword] = useState("asu1321@jjf_a");
+  const [username, setUsername] = useState("jerry@gmail.com");
+  const [password, setPassword] = useState("123456");
   const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && password) {
+    if (username && password) {
       localStorage.setItem("token", "dummy_token");
+      localStorage.setItem("role", "superadmin");
       navigate("/admin/dashboard");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      <div className="w-full max-w-md p-8 bg-gray-950/70 backdrop-blur-md shadow-2xl rounded-2xl border border-gray-700">
-        {/* Title */}
-        <h2 className="text-3xl font-bold text-center text-white mb-8 tracking-wide">
-          Admin Login
-        </h2>
+    <div className="flex min-h-screen bg-[#0e1a2b]">
+      <div className="flex flex-col items-center justify-center w-1/2 text-white">
+        <div className="flex items-center space-x-4">
+          <img
+            src="/logo.jpg"
+            alt="Logo"
+            className="w-28 h-28 object-contain"
+          />
+          <h1 className="text-6xl font-extrabold italic tracking-wide">
+            LELANG
+          </h1>
+        </div>
+      </div>
 
-        {/* Form */}
-        <form onSubmit={handleLogin} className="space-y-5">
-          <div>
-            <label className="block text-sm text-gray-300 mb-2">Email</label>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="w-full px-4 py-3 bg-gray-800 text-white placeholder-gray-500 border border-gray-700 rounded-lg focus:ring-2 focus:ring-gray-400 focus:outline-none"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+      <div className="w-px bg-gray-700"></div>
 
-          <div>
-            <label className="block text-sm text-gray-300 mb-2">Password</label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              className="w-full px-4 py-3 bg-gray-800 text-white placeholder-gray-500 border border-gray-700 rounded-lg focus:ring-2 focus:ring-gray-400 focus:outline-none"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+      <div className="flex flex-col justify-center w-1/2 px-16">
+        <div className="text-center mb-10">
+          <h2 className="text-4xl font-bold text-white mb-2">Welcome</h2>
+          <p className="text-gray-300 uppercase tracking-wide text-sm">
+            Please login to admin dashboard
+          </p>
+        </div>
 
-          {/* Login Button */}
+        <form onSubmit={handleLogin} className="space-y-6">
+          <input
+            type="text"
+            placeholder="Username"
+            className="w-full px-4 py-3 bg-gray-200 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-400 focus:outline-none"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full px-4 py-3 bg-gray-200 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-400 focus:outline-none"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
           <button
             type="submit"
-            className="w-full bg-white text-gray-900 font-semibold py-3 rounded-lg shadow-md hover:bg-gray-200 transition duration-300"
+            className="w-full bg-red-600 text-white font-bold py-3 rounded-md hover:bg-red-700 transition duration-300"
           >
-            Sign In
+            LOGIN
           </button>
         </form>
-
-        {/* Footer */}
-        <p className="text-center text-gray-400 text-sm mt-6">
-          © {new Date().getFullYear()} Lelang Admin Web
-        </p>
       </div>
     </div>
   );
