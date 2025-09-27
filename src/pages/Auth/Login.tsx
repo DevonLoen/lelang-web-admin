@@ -2,21 +2,50 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [username, setUsername] = useState("jerry@gmail.com");
+  const [phone, setPhone] = useState("088469547852");
   const [password, setPassword] = useState("123456");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (username && password) {
-      localStorage.setItem("token", "dummy_token");
-      localStorage.setItem("role", "superadmin");
-      navigate("/admin/dashboard");
+  const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
+
+  try {
+    const response = await fetch("http://localhost:3000/v1/users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ phone, password }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Invalid phone or password");
     }
-  };
+
+    const data = await response.json();
+    localStorage.setItem("token", data.token);
+
+    // --- Parse JWT payload ---
+    const payloadBase64 = data.token.split(".")[1]; // ambil bagian tengah
+    const payload = JSON.parse(atob(payloadBase64));
+    console.log("Decoded token payload:", payload);
+
+    navigate("/admin/dashboard");
+  } catch (err: any) {
+    setError(err.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="flex min-h-screen bg-[#0e1a2b]">
+      {/* Left Side Branding */}
       <div className="flex flex-col items-center justify-center w-1/2 text-white">
         <div className="flex items-center space-x-4">
           <img
@@ -30,8 +59,10 @@ const Login = () => {
         </div>
       </div>
 
+      {/* Divider */}
       <div className="w-px bg-gray-700"></div>
 
+      {/* Right Side Form */}
       <div className="flex flex-col justify-center w-1/2 px-16">
         <div className="text-center mb-10">
           <h2 className="text-4xl font-bold text-white mb-2">Welcome</h2>
@@ -43,10 +74,10 @@ const Login = () => {
         <form onSubmit={handleLogin} className="space-y-6">
           <input
             type="text"
-            placeholder="Username"
+            placeholder="Phone Number"
             className="w-full px-4 py-3 bg-gray-200 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-400 focus:outline-none"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
             required
           />
 
@@ -59,11 +90,18 @@ const Login = () => {
             required
           />
 
+          {error && (
+            <p className="text-red-500 text-sm font-medium text-center">
+              {error}
+            </p>
+          )}
+
           <button
             type="submit"
-            className="w-full bg-red-600 text-white font-bold py-3 rounded-md hover:bg-red-700 transition duration-300"
+            disabled={loading}
+            className="w-full bg-red-600 text-white font-bold py-3 rounded-md hover:bg-red-700 transition duration-300 disabled:opacity-50"
           >
-            LOGIN
+            {loading ? "Logging in..." : "LOGIN"}
           </button>
         </form>
       </div>

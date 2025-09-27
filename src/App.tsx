@@ -2,7 +2,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Auth/Login";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import AdminLayout from "./layout/AdminLayout";
-import CreateAdmin from "./pages/Auth/CreateAdmin";
+import CreateAdmin from "./pages/Admin/CreateAdmin";
+import AdminPage from "./pages/Admin/Admin";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -17,6 +18,7 @@ function App() {
         element={token ? <AdminLayout /> : <Navigate to="/login" />}
       >
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="master-admin" element={<AdminPage />} />
         <Route path="create-admin" element={<CreateAdmin />} />
       </Route>
 
