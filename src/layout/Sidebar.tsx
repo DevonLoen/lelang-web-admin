@@ -7,7 +7,11 @@ import {
   LogOut,
   Shield,
   Package,
+    User
 } from "lucide-react";
+
+import { parseJwt } from "../utils/parseJwt";
+
 
 interface Props {
   children: ReactNode;
@@ -16,15 +20,15 @@ interface Props {
 const Sidebar = ({ children }: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const role = localStorage.getItem("role") as UserRole | null;
+  const token = localStorage.getItem("token");
+  const payload = token ? parseJwt(token) : null;
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("role");
     navigate("/login");
   };
 
-  // Fungsi untuk memeriksa apakah link aktif
+  // Cek link aktif
   const isActiveLink = (path: string) => {
     return location.pathname === path;
   };
@@ -46,17 +50,18 @@ const Sidebar = ({ children }: Props) => {
           </div>
 
           <nav className="mt-6 space-y-1 px-4">
-            {role === UserRole.SUPER_ADMIN && (
+            {/* sementara tampilkan hanya kalau phone dari token = 088469547852, kedepannya by role */}
+            {payload?.phone === "088469547852" && (
               <Link
-                to="/admin/create-admin"
+                to="/admin/master-admin"
                 className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${
-                  isActiveLink("/admin/create-admin")
+                  isActiveLink("/admin/master-admin")
                     ? "bg-blue-600 text-white shadow-lg"
                     : "text-blue-100 hover:bg-white/10 hover:text-white"
                 }`}
               >
-                <UserPlus className="h-5 w-5 mr-3" />
-                <span className="font-medium">Create Admin</span>
+                <User className="h-5 w-5 mr-3" />
+                <span className="font-medium">Admin</span>
               </Link>
             )}
 
@@ -89,11 +94,13 @@ const Sidebar = ({ children }: Props) => {
           <div className="flex items-center justify-between mb-4 px-2">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold">A</span>
+                <span className="text-white font-semibold">
+                  {payload?.phone?.[0] || "U"}
+                </span>
               </div>
               <div className="ml-3">
                 <p className="text-sm font-medium text-white">Admin User</p>
-                <p className="text-xs text-blue-200">{role}</p>
+                <p className="text-xs text-blue-200">{payload?.phone}</p>
               </div>
             </div>
           </div>
