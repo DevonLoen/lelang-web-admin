@@ -1,7 +1,17 @@
 import type { ReactNode } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard,  LogOut, Shield, User } from "lucide-react";
+import { UserRole } from "../enums/user-role";
+import {
+  LayoutDashboard,
+  UserPlus,
+  LogOut,
+  Shield,
+  Package,
+    User
+} from "lucide-react";
+
 import { parseJwt } from "../utils/parseJwt";
+
 
 interface Props {
   children: ReactNode;
@@ -65,6 +75,17 @@ const Sidebar = ({ children }: Props) => {
             >
               <LayoutDashboard className="h-5 w-5 mr-3" />
               <span className="font-medium">Dashboard</span>
+            </Link>
+            <Link
+              to="/admin/product"
+              className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${
+                isActiveLink("/admin/product")
+                  ? "bg-blue-600 text-white shadow-lg"
+                  : "text-blue-100 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <Package className="h-5 w-5 mr-3" />
+              <span className="font-medium">Product</span>
             </Link>
           </nav>
         </div>
