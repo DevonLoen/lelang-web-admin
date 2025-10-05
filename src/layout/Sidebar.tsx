@@ -1,9 +1,7 @@
 import type { ReactNode } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { UserRole } from "../enums/user-role";
 import {
   LayoutDashboard,
-  UserPlus,
   LogOut,
   Shield,
   Package,
@@ -51,7 +49,7 @@ const Sidebar = ({ children }: Props) => {
 
           <nav className="mt-6 space-y-1 px-4">
             {/* sementara tampilkan hanya kalau phone dari token = 088469547852, kedepannya by role */}
-            {payload?.phone === "088469547852" && (
+            {payload?.role[0] === "SUPERADMIN" && (
               <Link
                 to="/admin/master-admin"
                 className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${
