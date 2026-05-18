@@ -2,46 +2,46 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [phone, setPhone] = useState("088469547852");
-  const [password, setPassword] = useState("123456");
+  const [phone, setPhone] = useState("+6281234567890");
+  const [password, setPassword] = useState("password123");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError("");
-  setLoading(true);
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-  try {
-    const response = await fetch("http://localhost:3000/v1/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ phone, password }),
-    });
+    try {
+      const response = await fetch("http://localhost:8080/admin/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phone, password }),
+      });
 
-    if (!response.ok) {
-      throw new Error("Invalid phone or password");
+      if (!response.ok) {
+        throw new Error("Invalid phone or password");
+      }
+
+      const res = await response.json();
+      const data = res.data;
+      localStorage.setItem("token", data.token);
+
+      // --- Parse JWT payload ---
+      const payloadBase64 = data.token.split(".")[1]; // ambil bagian tengah
+      const payload = JSON.parse(atob(payloadBase64));
+      console.log("Decoded token payload:", payload);
+
+      navigate("/admin/product");
+    } catch (err: any) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
-
-    const data = await response.json();
-    localStorage.setItem("token", data.token);
-
-    // --- Parse JWT payload ---
-    const payloadBase64 = data.token.split(".")[1]; // ambil bagian tengah
-    const payload = JSON.parse(atob(payloadBase64));
-    console.log("Decoded token payload:", payload);
-
-    navigate("/admin/dashboard");
-  } catch (err: any) {
-    setError(err.message || "Something went wrong");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   return (
     <div className="flex min-h-screen bg-[#0e1a2b]">

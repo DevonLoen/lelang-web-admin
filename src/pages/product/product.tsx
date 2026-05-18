@@ -5,10 +5,10 @@ import Breadcrumb from "../../components/breadcrumb";
 const Product = () => {
   const menus = [
     {
-      title: "Pending Verification",
+      title: "Request Verification",
       desc: "Items uploaded by sellers and awaiting admin verification.",
       icon: <ClipboardCheck className="h-8 w-8 mb-3 text-yellow-600" />,
-      link: "/admin/product/pending",
+      link: "/admin/product/request",
     },
     {
       title: "Verified Items",

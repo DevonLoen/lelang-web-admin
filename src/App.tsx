@@ -1,12 +1,15 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Auth/Login";
-import Dashboard from "./pages/Dashboard/Dashboard";
 import AdminLayout from "./layout/AdminLayout";
-import CreateAdmin from "./pages/Admin/CreateAdmin";
-import Product from "./pages/product/product";
-import PendingProduct from "./pages/product/pending-product";
 import { Toaster } from "./components/ui/toaster";
-import AdminPage from "./pages/Admin/Admin";
+import Product from "./pages/Product/Product";
+import RolesVerification from "./pages/RolesVerification/RolesVerification";
+import WithdrawalRequest from "./pages/WithdrawalRequest/WithdrawalRequest";
+import PaymentMethod from "./pages/PaymentMethod/PaymentMethod";
+import ProductRequestPage from "./pages/Product/RequestProduct";
+import ProductRejectedPage from "./pages/Product/RejectedProduct";
+import ProductApprovedPage from "./pages/Product/VerfiedProduct";
+import AdminManagement from "./pages/Admin/Admin";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -21,11 +24,15 @@ function App() {
           path="/admin"
           element={token ? <AdminLayout /> : <Navigate to="/login" />}
         >
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="master-admin" element={<AdminPage />} />
-          <Route path="create-admin" element={<CreateAdmin />} />
+          {/* <Route path="dashboard" element={<Dashboard />} /> */}
+          <Route path="master-admin" element={<AdminManagement />} />
           <Route path="product" element={<Product />} />
-          <Route path="product/pending" element={<PendingProduct />} />
+          <Route path="product/request" element={<ProductRequestPage />} />
+          <Route path="product/approved" element={<ProductApprovedPage />} />
+          <Route path="product/rejected" element={<ProductRejectedPage />} />
+          <Route path="roles-verification" element={<RolesVerification />} />
+          <Route path="withdrawal-request" element={<WithdrawalRequest />} />
+          <Route path="payment-method" element={<PaymentMethod />} />
         </Route>
 
         {/* default route */}
