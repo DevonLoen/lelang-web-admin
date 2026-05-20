@@ -5,11 +5,13 @@ import {
   LogOut,
   Shield,
   Package,
-    User
+  User,
+  IdCard,
+  HandCoins,
+  CreditCard,
 } from "lucide-react";
 
 import { parseJwt } from "../utils/parseJwt";
-
 
 interface Props {
   children: ReactNode;
@@ -18,6 +20,7 @@ interface Props {
 const Sidebar = ({ children }: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
+
   const token = localStorage.getItem("token");
   const payload = token ? parseJwt(token) : null;
 
@@ -26,93 +29,121 @@ const Sidebar = ({ children }: Props) => {
     navigate("/login");
   };
 
-  // Cek link aktif
   const isActiveLink = (path: string) => {
     return location.pathname === path;
   };
 
-  return (
-    <div className="flex h-screen bg-gray-50">
-      <aside className="w-72 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-2xl flex flex-col justify-between relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-40 bg-white/5 rounded-b-full"></div>
-        <div className="absolute bottom-0 right-0 w-32 h-32 bg-blue-600/10 rounded-tl-full"></div>
+  const menuClass = (path: string) =>
+    `flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 ${
+      isActiveLink(path)
+        ? "bg-blue-600 text-white shadow-lg"
+        : "text-slate-200 hover:bg-white/10 hover:text-white"
+    }`;
 
-        <div className="relative z-10">
-          <div className="p-6 border-b border-white/10">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-blue-600 rounded-lg">
-                <Shield className="h-6 w-6 text-white" />
+  return (
+    <div className="flex h-screen bg-slate-100">
+      {/* SIDEBAR */}
+      <aside className="w-[270px] bg-[#18233A] flex flex-col justify-between px-4 py-5">
+        {/* TOP */}
+        <div>
+          {/* LOGO */}
+          <div className="pb-5 border-b border-white/20">
+            <div className="flex items-center gap-3 px-2">
+              <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center">
+                <Shield className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-white">Admin Panel</h1>
+
+              <h1 className="text-white text-2xl font-bold tracking-wide">
+                Admin Panel
+              </h1>
             </div>
           </div>
 
-          <nav className="mt-6 space-y-1 px-4">
-            {/* sementara tampilkan hanya kalau phone dari token = 088469547852, kedepannya by role */}
-            {payload?.role[0] === "SUPERADMIN" && (
+          {/* MENU */}
+          <nav className="mt-6 flex flex-col gap-2">
+            {/* SUPER ADMIN */}
+            {payload?.roles?.[0] === "SUPERADMIN" && (
               <Link
                 to="/admin/master-admin"
-                className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${
-                  isActiveLink("/admin/master-admin")
-                    ? "bg-blue-600 text-white shadow-lg"
-                    : "text-blue-100 hover:bg-white/10 hover:text-white"
-                }`}
+                className={menuClass("/admin/master-admin")}
               >
-                <User className="h-5 w-5 mr-3" />
+                <User className="w-5 h-5" />
                 <span className="font-medium">Admin</span>
               </Link>
             )}
 
-            <Link
+            {/* DASHBOARD */}
+            {/* <Link
               to="/admin/dashboard"
-              className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${
-                isActiveLink("/admin/dashboard")
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "text-blue-100 hover:bg-white/10 hover:text-white"
-              }`}
+              className={menuClass("/admin/dashboard")}
             >
-              <LayoutDashboard className="h-5 w-5 mr-3" />
+              <LayoutDashboard className="w-5 h-5" />
               <span className="font-medium">Dashboard</span>
-            </Link>
-            <Link
-              to="/admin/product"
-              className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${
-                isActiveLink("/admin/product")
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "text-blue-100 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              <Package className="h-5 w-5 mr-3" />
+            </Link> */}
+
+            {/* PRODUCT */}
+            <Link to="/admin/product" className={menuClass("/admin/product")}>
+              <Package className="w-5 h-5" />
               <span className="font-medium">Product</span>
+            </Link>
+
+            {/* ROLES VERIFICATION */}
+            <Link
+              to="/admin/roles-verification"
+              className={menuClass("/admin/roles-verification")}
+            >
+              <IdCard className="w-5 h-5" />
+              <span className="font-medium">Roles Verification</span>
+            </Link>
+
+            {/* WITHDRAWAL REQUEST */}
+            <Link
+              to="/admin/withdrawal-request"
+              className={menuClass("/admin/withdrawal-request")}
+            >
+              <HandCoins className="w-5 h-5" />
+              <span className="font-medium">Withdrawal Request</span>
+            </Link>
+
+            {/* PAYMENT METHOD */}
+            <Link
+              to="/admin/payment-method"
+              className={menuClass("/admin/payment-method")}
+            >
+              <CreditCard className="w-5 h-5" />
+              <span className="font-medium">Payment Method</span>
             </Link>
           </nav>
         </div>
 
-        <div className="relative z-10 p-4 border-t border-white/10">
-          <div className="flex items-center justify-between mb-4 px-2">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold">
-                  {payload?.phone?.[0] || "U"}
-                </span>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-white">Admin User</p>
-                <p className="text-xs text-blue-200">{payload?.phone}</p>
-              </div>
+        {/* BOTTOM */}
+        <div className="border-t border-white/20 pt-4">
+          {/* USER */}
+          <div className="flex items-center gap-3 px-2 mb-4">
+            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+              <span className="text-white font-semibold">
+                {payload?.phone?.[0] || "U"}
+              </span>
+            </div>
+
+            <div>
+              <p className="text-sm font-semibold text-white">Admin User</p>
+              <p className="text-xs text-blue-300">{payload?.phone}</p>
             </div>
           </div>
 
+          {/* LOGOUT */}
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center px-4 py-3 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-all duration-200 group"
+            className="w-full flex items-center justify-center gap-2 bg-white/20 hover:bg-white/30 transition-all duration-200 text-white py-3 rounded-2xl"
           >
-            <LogOut className="h-5 w-5 mr-2 group-hover:translate-x-1 transition-transform" />
+            <LogOut className="w-5 h-5" />
             <span className="font-medium">Logout</span>
           </button>
         </div>
       </aside>
 
+      {/* CONTENT */}
       <main className="flex-1 overflow-y-auto">{children}</main>
     </div>
   );
