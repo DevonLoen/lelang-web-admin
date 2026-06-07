@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Check, XCircle } from "lucide-react";
+import { X, Check, XCircle, AlertTriangle } from "lucide-react";
 
 interface User {
   id: string;
@@ -39,6 +39,7 @@ export default function ProductVerificationModal({
 }: ProductModalProps) {
   const isPending = product.status === "REQUEST";
   const [showRejectForm, setShowRejectForm] = useState(false);
+  const [showApproveConfirm, setShowApproveConfirm] = useState(false);
   const [rejectMessage, setRejectMessage] = useState("");
 
   const handleConfirmReject = () => {
@@ -47,6 +48,11 @@ export default function ProductVerificationModal({
       return;
     }
     onAction(product.id, "REJECTED", rejectMessage);
+  };
+
+  const handleConfirmApprove = () => {
+    setShowApproveConfirm(false);
+    onAction(product.id, "VERIFIED");
   };
 
   return (
@@ -200,7 +206,7 @@ export default function ProductVerificationModal({
               </button>
 
               <button
-                onClick={() => onAction(product.id, "VERIFIED")}
+                onClick={() => setShowApproveConfirm(true)}
                 disabled={isProcessing}
                 className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 disabled:opacity-50"
               >
@@ -211,6 +217,49 @@ export default function ProductVerificationModal({
           )}
         </div>
       </div>
+
+      {/* Confirm Approve Modal */}
+      {showApproveConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-fadeIn">
+            <div className="p-6 text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4">
+                <AlertTriangle className="h-6 w-6 text-blue-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Confirm Approval
+              </h3>
+              <p className="text-sm text-gray-500 mb-6">
+                Are you sure you want to approve this product?
+                <br />
+                <span className="font-medium text-gray-700">
+                  "{product.name}"
+                </span>
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowApproveConfirm(false)}
+                  className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-xl transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmApprove}
+                  disabled={isProcessing}
+                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {isProcessing ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Check className="w-4 h-4" />
+                  )}
+                  Approve
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -29,6 +29,10 @@ export default function PaymentMethod() {
   const [total, setTotal] = useState(0);
   const limit = 10;
 
+  const [searchName, setSearchName] = useState("");
+  const [searchCode, setSearchCode] = useState("");
+  const [searchType, setSearchType] = useState("");
+
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(
@@ -44,20 +48,32 @@ export default function PaymentMethod() {
   const fetchPaymentMethods = async () => {
     setLoading(true);
     setError(null);
+
     const token = getToken();
 
     try {
       const response = await fetch(
-        `http://localhost:8080/admin/payment-methods?page=${page}&limit=${limit}`,
+        "http://localhost:8080/admin/payment-methods/filter",
         {
+          method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            accept: "application/json",
           },
+          body: JSON.stringify({
+            page,
+            limit,
+            name: searchName || undefined,
+            code: searchCode || undefined,
+            type: searchType || undefined,
+          }),
         },
       );
 
-      if (!response.ok) throw new Error("Failed to load payment methods");
+      if (!response.ok) {
+        throw new Error("Failed to load payment methods");
+      }
 
       const res = await response.json();
       const data: ApiResponse = res.data;
@@ -137,9 +153,111 @@ export default function PaymentMethod() {
     }
   };
 
+  const handleUpdateMethod = async (
+    id: number,
+    payload: {
+      name: string;
+      code: string;
+      type: string;
+      is_active: boolean;
+    },
+  ) => {
+    setActionLoading(true);
+
+    const token = getToken();
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/admin/payment-methods/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            accept: "application/json",
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update payment method");
+      }
+
+      setIsModalOpen(false);
+      setSelectedMethod(null);
+
+      await fetchPaymentMethods();
+    } catch (err: any) {
+      alert(err.message || "Failed to update payment method");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleSaveMethod = async (payload: {
+    name: string;
+    code: string;
+    type: string;
+    is_active: boolean;
+  }) => {
+    console.log("selectedMethod", selectedMethod);
+
+    if (selectedMethod) {
+      await handleUpdateMethod(selectedMethod.id, payload);
+    } else {
+      await handleCreateMethod(payload);
+    }
+  };
+
   useEffect(() => {
     fetchPaymentMethods();
   }, [page]);
+
+  // Reset all filters
+  const handleResetFilters = async () => {
+    // Reset semua state
+    setSearchName("");
+    setSearchCode("");
+    setSearchType("");
+    setPage(1);
+
+    // Ambil token
+    const token = getToken();
+
+    // Fetch langsung dengan nilai kosong (tanpa membaca state)
+    try {
+      setLoading(true);
+      const response = await fetch(
+        "http://localhost:8080/admin/payment-methods/filter",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            page: 1, // Langsung kasih nilai 1
+            limit,
+          }),
+        },
+      );
+
+      const res = await response.json();
+      const data: ApiResponse = res.data;
+      setMethods(data.nodes || []);
+      setTotal(data.total || 0);
+    } catch (err: any) {
+      setError(err.message || "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+  // Handle search
+  const handleSearch = () => {
+    setPage(1);
+    fetchPaymentMethods();
+  };
 
   // Helper pencocokan penulisan kategori string agar rapi
   const formatCategory = (type: string) => {
@@ -171,6 +289,51 @@ export default function PaymentMethod() {
           </button>
         </div>
 
+        {/* Filter Section */}
+        <div className="mb-6 bg-white p-4 rounded-xl border border-gray-100 flex flex-wrap gap-3">
+          <input
+            type="text"
+            placeholder="Search name..."
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            className="px-4 py-2 border rounded-lg text-sm"
+          />
+
+          <input
+            type="text"
+            placeholder="Search code..."
+            value={searchCode}
+            onChange={(e) => setSearchCode(e.target.value)}
+            className="px-4 py-2 border rounded-lg text-sm"
+          />
+
+          <select
+            value={searchType}
+            onChange={(e) => setSearchType(e.target.value)}
+            className="px-4 py-2 border rounded-lg text-sm"
+          >
+            <option value="">All Types</option>
+            <option value="BANK_TRANSFER">Bank Transfer</option>
+            <option value="E_WALLET">E-Wallet</option>
+            <option value="QRIS">QRIS</option>
+            <option value="CREDIT_CARD">Credit Card</option>
+          </select>
+
+          <button
+            onClick={handleSearch}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+          >
+            Search
+          </button>
+
+          <button
+            onClick={handleResetFilters}
+            className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            Reset
+          </button>
+        </div>
+
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
             {error}
@@ -198,7 +361,7 @@ export default function PaymentMethod() {
                     <th className="py-4 px-6 font-medium">Code</th>
                     <th className="py-4 px-6 font-medium">Status</th>
                     <th className="py-4 px-6 font-medium text-center w-32">
-                      Action
+                      Actions
                     </th>
                   </tr>
                 </thead>
@@ -239,17 +402,30 @@ export default function PaymentMethod() {
 
                         {/* Action Toggle Switch (Buka Tutup) */}
                         <td className="py-4 px-6 text-center">
-                          <div className="flex justify-center items-center">
+                          <div className="flex items-center justify-center gap-4">
+                            <button
+                              onClick={() => {
+                                setSelectedMethod(method);
+                                setIsModalOpen(true);
+                              }}
+                              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors"
+                            >
+                              Edit
+                            </button>
+
                             <label className="relative inline-flex items-center cursor-pointer">
                               <input
                                 type="checkbox"
-                                checked={isActive}
+                                checked={method.is_active}
                                 onChange={() =>
-                                  handleToggleStatus(method.id, isActive)
+                                  handleToggleStatus(
+                                    method.id,
+                                    method.is_active,
+                                  )
                                 }
                                 className="sr-only peer"
                               />
-                              <div className="w-9 h-5 bg-gray-200 rounded-full peer peer-focus:ring-0 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                              <div className="w-10 h-5 bg-gray-200 rounded-full peer peer-checked:bg-green-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5"></div>
                             </label>
                           </div>
                         </td>
@@ -300,8 +476,11 @@ export default function PaymentMethod() {
         {/* Modal Form Dialog */}
         <PaymentMethodModal
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSave={handleCreateMethod}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedMethod(null);
+          }}
+          onSave={handleSaveMethod}
           initialData={selectedMethod}
           isProcessing={actionLoading}
         />

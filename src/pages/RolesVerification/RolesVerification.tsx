@@ -58,6 +58,7 @@ export default function RolesVerification() {
   const fetchRequests = async () => {
     setLoading(true);
     setError(null);
+
     const token = getToken();
     if (!token) {
       setError("No authentication token found. Please login again.");
@@ -67,12 +68,20 @@ export default function RolesVerification() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/admin/role-requests/list/${activeTab}?page=${page}&limit=${limit}&status=REQUESTED`,
+        `http://localhost:8080/admin/role-requests/list/${activeTab}`,
         {
+          method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            accept: "application/json",
           },
+          body: JSON.stringify({
+            limit,
+            page,
+            role: activeTab,
+            status: "REQUESTED",
+          }),
         },
       );
 
@@ -80,7 +89,10 @@ export default function RolesVerification() {
         setError("Session expired. Please login again.");
         return;
       }
-      if (!response.ok) throw new Error(`Failed to fetch requests`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch requests");
+      }
 
       const res = await response.json();
       const data: ApiResponse = res.data;

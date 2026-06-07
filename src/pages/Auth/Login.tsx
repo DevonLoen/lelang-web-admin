@@ -36,6 +36,7 @@ const Login = () => {
       console.log("Decoded token payload:", payload);
 
       navigate("/admin/product");
+      window.location.href = "/admin/product";
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {

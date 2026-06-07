@@ -37,6 +37,11 @@ export default function WithdrawalRequest() {
   const [total, setTotal] = useState(0);
   const limit = 10;
 
+  // Filter status
+  const [statusFilter, setStatusFilter] = useState<
+    "REQUESTED" | "COMPLETED" | ""
+  >("REQUESTED");
+
   // Modal interaction state
   const [selectedNode, setSelectedNode] = useState<WithdrawalNode | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
@@ -49,20 +54,30 @@ export default function WithdrawalRequest() {
   const fetchWithdrawals = async () => {
     setLoading(true);
     setError(null);
+
     const token = getToken();
 
     try {
       const response = await fetch(
-        `http://localhost:8080/admin/withdrawal-requests?page=${page}&limit=${limit}`,
+        "http://localhost:8080/admin/withdrawal-requests/filter",
         {
+          method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            accept: "application/json",
           },
+          body: JSON.stringify({
+            limit,
+            page,
+            status: statusFilter || undefined, // Kirim undefined jika filter kosong
+          }),
         },
       );
 
-      if (!response.ok) throw new Error("Failed to fetch withdrawal records");
+      if (!response.ok) {
+        throw new Error("Failed to fetch withdrawal records");
+      }
 
       const res = await response.json();
       const data: ApiResponse = res.data;
@@ -107,9 +122,15 @@ export default function WithdrawalRequest() {
     }
   };
 
+  // Handle filter change
+  const handleFilterChange = (status: "REQUESTED" | "COMPLETED" | "") => {
+    setStatusFilter(status);
+    setPage(1); // Reset ke halaman pertama saat filter berubah
+  };
+
   useEffect(() => {
     fetchWithdrawals();
-  }, [page]);
+  }, [page, statusFilter]);
 
   // Formatting utilities
   const formatRupiah = (amount: number) => {
@@ -135,6 +156,31 @@ export default function WithdrawalRequest() {
     return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
   };
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "REQUESTED":
+        return (
+          <span className="text-[#F59E0B] font-medium bg-yellow-50 px-2 py-1 rounded-full text-xs">
+            Requested
+          </span>
+        );
+      case "COMPLETED":
+        return (
+          <span className="text-[#10B981] font-medium bg-green-50 px-2 py-1 rounded-full text-xs">
+            Completed
+          </span>
+        );
+      case "REJECTED":
+        return (
+          <span className="text-[#EF4444] font-medium bg-red-50 px-2 py-1 rounded-full text-xs">
+            Rejected
+          </span>
+        );
+      default:
+        return <span className="text-gray-500">{status}</span>;
+    }
+  };
+
   const totalPages = Math.ceil(total / limit);
 
   return (
@@ -145,6 +191,45 @@ export default function WithdrawalRequest() {
           <h1 className="text-2xl font-bold text-[#0F172A]">
             Withdrawal Verification
           </h1>
+        </div>
+
+        {/* Filter Section */}
+        <div className="mb-6 bg-white p-4 rounded-xl border border-gray-100 flex flex-wrap gap-3 items-center">
+          <span className="text-sm font-medium text-gray-700">
+            Filter Status:
+          </span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleFilterChange("REQUESTED")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                statusFilter === "REQUESTED"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Requested
+            </button>
+            <button
+              onClick={() => handleFilterChange("COMPLETED")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                statusFilter === "COMPLETED"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Completed
+            </button>
+            <button
+              onClick={() => handleFilterChange("")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                statusFilter === ""
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              All
+            </button>
+          </div>
         </div>
 
         {error && (
@@ -160,7 +245,8 @@ export default function WithdrawalRequest() {
           </div>
         ) : nodes.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-xl border border-gray-100 text-gray-400">
-            No withdrawal request logs available.
+            No withdrawal {statusFilter ? statusFilter.toLowerCase() : ""}{" "}
+            records available.
           </div>
         ) : (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)] overflow-hidden">
@@ -210,17 +296,9 @@ export default function WithdrawalRequest() {
                           {formatDate(node.CreatedAt)}
                         </td>
 
-                        {/* Status styling logic (Sesuai Mockup Ring Warna) */}
+                        {/* Status dengan badge yang lebih baik */}
                         <td className="py-4 px-6">
-                          {isRequested ? (
-                            <span className="text-[#4ADE80] font-medium">
-                              Request
-                            </span>
-                          ) : (
-                            <span className="text-[#3B82F6] font-medium">
-                              Completed
-                            </span>
-                          )}
+                          {getStatusBadge(node.status)}
                         </td>
 
                         {/* Action buttons render logic */}
