@@ -23,6 +23,7 @@ const Sidebar = ({ children }: Props) => {
 
   const token = localStorage.getItem("token");
   const payload = token ? parseJwt(token) : null;
+  console.log(payload);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -127,7 +128,9 @@ const Sidebar = ({ children }: Props) => {
             </div>
 
             <div>
-              <p className="text-sm font-semibold text-white">Admin User</p>
+              <p className="text-sm font-semibold text-white">
+                {payload?.roles[0] === "SUPERADMIN" ? "Superadmin" : "Admin"}
+              </p>
               <p className="text-xs text-blue-300">{payload?.phone}</p>
             </div>
           </div>

@@ -49,7 +49,7 @@ export default function AdminManagement() {
     return localStorage.getItem("token");
   };
 
-  // Fetch List Admin
+  // Fetch List Admin with POST method
   const fetchAdmins = async () => {
     setLoading(true);
     setError(null);
@@ -57,17 +57,30 @@ export default function AdminManagement() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/admin/users/admins?page=${page}&limit=${limit}`,
+        "http://localhost:8080/admin/users/admins/filter",
         {
+          method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            accept: "application/json",
           },
+          body: JSON.stringify({
+            limit,
+            page,
+            sorts: [
+              {
+                direction: "desc",
+                field: "created_at",
+              },
+            ],
+          }),
         },
       );
 
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error("Failed to fetch administrator records");
+      }
 
       const res = await response.json();
       const data: ApiResponse = res.data;
@@ -149,7 +162,7 @@ export default function AdminManagement() {
           </div>
         ) : nodes.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-xl border border-gray-100 text-gray-400">
-            No admin logs available.
+            No admin records available.
           </div>
         ) : (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)] overflow-hidden">
@@ -184,9 +197,13 @@ export default function AdminManagement() {
                       <td className="py-4 px-6">{formatDate(node.birth)}</td>
                       <td className="py-4 px-6">
                         <span
-                          className={`px-2 py-0.5 rounded text-xs font-bold ${node.gender === "MALE" ? "bg-blue-50 text-blue-600 border border-blue-200" : "bg-pink-50 text-pink-600 border border-pink-200"}`}
+                          className={`px-2 py-0.5 rounded text-xs font-bold ${
+                            node.gender === "MALE"
+                              ? "bg-blue-50 text-blue-600 border border-blue-200"
+                              : "bg-pink-50 text-pink-600 border border-pink-200"
+                          }`}
                         >
-                          {node.gender}
+                          {node.gender === "MALE" ? "Male" : "Female"}
                         </span>
                       </td>
                       <td className="py-4 px-6">
