@@ -1,5 +1,5 @@
 interface User {
-  id: string;
+  id: number;
   fullname: string;
   phone: string;
   bank_name: string | null;
@@ -9,7 +9,7 @@ interface User {
 
 interface WithdrawalNode {
   id: number;
-  user_id: string;
+  user_id: number;
   amount: number;
   status: "REQUESTED" | "COMPLETED" | "REJECTED";
   CreatedAt: string;

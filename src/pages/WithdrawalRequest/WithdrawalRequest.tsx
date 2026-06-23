@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import WithdrawalModal from "./WithdrawalModal";
 
 interface User {
-  id: string;
+  id: number;
   fullname: string;
   phone: string;
   bank_name: string | null;
@@ -12,8 +12,8 @@ interface User {
 
 interface WithdrawalNode {
   id: number;
-  user_id: string;
-  validator_user_id: string | null;
+  user_id: number;
+  validator_user_id: number | null;
   amount: number;
   status: "REQUESTED" | "COMPLETED" | "REJECTED";
   CreatedAt: string;

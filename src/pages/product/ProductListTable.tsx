@@ -8,12 +8,40 @@ interface ProductListTableProps {
   title: string;
 }
 
+interface ProductUser {
+  id: number;
+  fullname: string;
+  phone: string;
+  nik: string;
+  is_verified: boolean;
+}
+
+interface ProductNode {
+  id: number;
+  name: string;
+  description: string;
+  condition: string;
+  status: "REQUEST" | "VERIFIED" | "REJECTED";
+  image_links: string[];
+  created_at: string;
+  user: ProductUser;
+}
+
+const normalizeProduct = (product: ProductNode): ProductNode => ({
+  ...product,
+  id: Number(product.id),
+  user: {
+    ...product.user,
+    id: Number(product.user.id),
+  },
+});
+
 export function ProductListTable({
   statusFilter,
   title,
 }: ProductListTableProps) {
   const navigate = useNavigate();
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<ProductNode[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +49,9 @@ export function ProductListTable({
   const [total, setTotal] = useState(0);
   const limit = 10;
 
-  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductNode | null>(
+    null,
+  );
   const [actionLoading, setActionLoading] = useState(false);
 
   const fetchProducts = async () => {
@@ -56,7 +86,7 @@ export function ProductListTable({
         throw new Error("Failed to fetch products filtering criteria");
 
       const res = await response.json();
-      setProducts(res.data.nodes || []);
+      setProducts((res.data.nodes || []).map(normalizeProduct));
       setTotal(res.data.total || 0);
     } catch (err: any) {
       setError(err.message || "An error occurred");
@@ -66,7 +96,7 @@ export function ProductListTable({
   };
 
   const handleVerifyAction = async (
-    id: string,
+    id: number,
     targetStatus: "VERIFIED" | "REJECTED",
     message?: string,
   ) => {

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Image, X } from "lucide-react";
 
 interface User {
-  id: string;
+  id: number;
   fullname: string;
   phone: string;
   nik: string | null;
@@ -12,7 +12,7 @@ interface User {
 
 interface RoleRequest {
   id: number;
-  user_id: string;
+  user_id: number;
   user: User;
 }
 

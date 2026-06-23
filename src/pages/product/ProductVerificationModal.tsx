@@ -2,7 +2,7 @@ import { useState } from "react";
 import { X, Check, XCircle, AlertTriangle } from "lucide-react";
 
 interface User {
-  id: string;
+  id: number;
   fullname: string;
   phone: string;
   nik: string;
@@ -10,7 +10,7 @@ interface User {
 }
 
 interface ProductNode {
-  id: string;
+  id: number;
   name: string;
   description: string;
   condition: string;
@@ -24,7 +24,7 @@ interface ProductModalProps {
   product: ProductNode;
   onClose: () => void;
   onAction: (
-    id: string,
+    id: number,
     action: "VERIFIED" | "REJECTED",
     message?: string,
   ) => Promise<void>;

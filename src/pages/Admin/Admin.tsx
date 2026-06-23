@@ -4,15 +4,15 @@ import { useNavigate } from "react-router-dom";
 import AddAdminModal from "./AddAdminModal";
 
 interface AdminRole {
-  id: string;
+  id: number;
   role: "ADMIN";
-  user_id: string;
+  user_id: number;
   created_at: string;
   updated_at: string;
 }
 
 interface AdminUser {
-  id: string;
+  id: number;
   fullname: string;
   phone: string;
   birth: string;

@@ -5,7 +5,7 @@ import BidderVerificationModal from "./BidderVerificationModal";
 import SellerVerificationModal from "./SellerVerificationModal";
 
 interface User {
-  id: string;
+  id: number;
   fullname: string;
   phone: string;
   nik: string | null;
@@ -18,7 +18,7 @@ interface User {
 
 interface RoleRequest {
   id: number;
-  user_id: string;
+  user_id: number;
   status: "REQUESTED" | "APPROVED" | "REJECTED";
   role: "BIDDER" | "SELLER";
   message: string | null;
