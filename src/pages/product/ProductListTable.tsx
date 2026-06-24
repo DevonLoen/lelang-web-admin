@@ -8,7 +8,7 @@ interface ProductListTableProps {
   title: string;
 }
 
-interface ProductUser {
+interface User {
   id: number;
   fullname: string;
   email: string;
@@ -22,9 +22,10 @@ interface ProductNode {
   description: string;
   condition: string;
   status: "REQUEST" | "VERIFIED" | "REJECTED";
+  cover_image_link: string;
   image_links: string[];
   created_at: string;
-  user: ProductUser;
+  user: User;
 }
 
 const normalizeProduct = (product: ProductNode): ProductNode => ({

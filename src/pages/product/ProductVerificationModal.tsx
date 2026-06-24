@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Check, XCircle, AlertTriangle } from "lucide-react";
+import { X, Check, XCircle, AlertTriangle, Send } from "lucide-react";
 
 interface User {
   id: number;
@@ -15,6 +15,7 @@ interface ProductNode {
   description: string;
   condition: string;
   status: "REQUEST" | "VERIFIED" | "REJECTED";
+  cover_image_link: string;
   image_links: string[];
   created_at: string;
   user: User;
@@ -47,6 +48,7 @@ export default function ProductVerificationModal({
       alert("Please provide a rejection message reason.");
       return;
     }
+    setShowRejectForm(false);
     onAction(product.id, "REJECTED", rejectMessage);
   };
 
@@ -79,6 +81,55 @@ export default function ProductVerificationModal({
           {/* Section 1: Product Specs */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-3">
+              Product Images
+            </h3>
+
+            <div className="space-y-4">
+              {/* Cover Image */}
+              {product.cover_image_link && (
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-2">
+                    Cover Image
+                  </label>
+
+                  <div className="w-full h-64 rounded-xl overflow-hidden border border-gray-200 bg-gray-100">
+                    <img
+                      src={product.cover_image_link}
+                      alt="Cover Product"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Product Images */}
+              {product.image_links?.length > 0 && (
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-2">
+                    Additional Images
+                  </label>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {product.image_links.map((image, index) => (
+                      <div
+                        key={index}
+                        className="h-32 rounded-xl overflow-hidden border border-gray-200 bg-gray-100"
+                      >
+                        <img
+                          src={image}
+                          alt={`Product ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-3">
               Product Information
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
@@ -95,7 +146,11 @@ export default function ProductVerificationModal({
                   Condition
                 </span>
                 <span
-                  className={`inline-block mt-1 px-2.5 py-0.5 rounded-md text-xs font-bold ${product.condition === "NEW" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}
+                  className={`inline-block mt-1 px-2.5 py-0.5 rounded-md text-xs font-bold ${
+                    product.condition === "NEW"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-amber-100 text-amber-700"
+                  }`}
                 >
                   {product.condition}
                 </span>
@@ -132,56 +187,8 @@ export default function ProductVerificationModal({
                 <span>:</span>
                 <span className="font-mono">{product.user.nik}</span>
               </div>
-              <div className="grid grid-cols-[120px_10px_1fr]">
-                <span className="text-gray-400">Account Status</span>
-                <span>:</span>
-                <span>
-                  {product.user.is_verified ? (
-                    <span className="text-green-600 font-semibold text-xs bg-green-50 px-2 py-0.5 rounded border border-green-200">
-                      Verified Seller
-                    </span>
-                  ) : (
-                    <span className="text-red-500 font-semibold text-xs bg-red-50 px-2 py-0.5 rounded border border-red-200">
-                      Unverified
-                    </span>
-                  )}
-                </span>
-              </div>
             </div>
           </div>
-
-          {/* Dynamic Section 3: Rejection Feedback Box */}
-          {showRejectForm && (
-            <div className="bg-red-50 border border-red-200 p-4 rounded-xl space-y-3 animate-fadeIn">
-              <label className="block text-xs font-bold text-red-700 uppercase tracking-wider">
-                Rejection Reason (Required)
-              </label>
-              <textarea
-                value={rejectMessage}
-                onChange={(e) => setRejectMessage(e.target.value)}
-                placeholder="Specify why this item is being rejected (e.g. Invalid document details, blurred photos...)"
-                rows={3}
-                className="w-full bg-white border border-red-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-red-500/20 text-gray-800 text-sm placeholder:text-gray-400"
-              />
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowRejectForm(false)}
-                  className="px-3 py-1.5 text-xs font-semibold text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleConfirmReject}
-                  disabled={isProcessing}
-                  className="px-3 py-1.5 text-xs font-bold bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50"
-                >
-                  Confirm Reject
-                </button>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Footer Action Buttons */}
@@ -194,7 +201,7 @@ export default function ProductVerificationModal({
             Close
           </button>
 
-          {isPending && !showRejectForm && (
+          {isPending && (
             <>
               <button
                 onClick={() => setShowRejectForm(true)}
@@ -220,7 +227,7 @@ export default function ProductVerificationModal({
 
       {/* Confirm Approve Modal */}
       {showApproveConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-fadeIn">
             <div className="p-6 text-center">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4">
@@ -254,6 +261,91 @@ export default function ProductVerificationModal({
                     <Check className="w-4 h-4" />
                   )}
                   Approve
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm Reject Modal */}
+      {showRejectForm && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden animate-fadeIn">
+            <div className="p-6">
+              {/* Header */}
+              <div className="flex items-start gap-4 mb-6">
+                <div className="flex-shrink-0">
+                  <div className="flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                    <XCircle className="h-6 w-6 text-red-600" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Reject Product
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Please provide a reason for rejecting this product
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowRejectForm(false);
+                    setRejectMessage("");
+                  }}
+                  className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Product Name */}
+              <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <p className="text-xs text-gray-500 font-medium">Product</p>
+                <p className="text-sm font-semibold text-gray-800 mt-0.5">
+                  {product.name}
+                </p>
+              </div>
+
+              {/* Rejection Reason */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Rejection Reason <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={rejectMessage}
+                  onChange={(e) => setRejectMessage(e.target.value)}
+                  placeholder="Explain why this product is being rejected..."
+                  rows={4}
+                  className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all text-gray-800 text-sm placeholder:text-gray-400 resize-none"
+                />
+                <p className="text-xs text-gray-400 mt-1.5">
+                  {rejectMessage.length}/500 characters
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowRejectForm(false);
+                    setRejectMessage("");
+                  }}
+                  className="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-xl transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmReject}
+                  disabled={isProcessing || !rejectMessage.trim()}
+                  className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isProcessing ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                  Confirm Reject
                 </button>
               </div>
             </div>

@@ -7,7 +7,7 @@ import {
   User,
   IdCard,
   HandCoins,
-  CreditCard,
+  LayoutDashboard,
 } from "lucide-react";
 
 import { parseJwt } from "../utils/parseJwt";
@@ -73,13 +73,13 @@ const Sidebar = ({ children }: Props) => {
             )}
 
             {/* DASHBOARD */}
-            {/* <Link
+            <Link
               to="/admin/dashboard"
               className={menuClass("/admin/dashboard")}
             >
               <LayoutDashboard className="w-5 h-5" />
               <span className="font-medium">Dashboard</span>
-            </Link> */}
+            </Link>
 
             {/* PRODUCT */}
             <Link to="/admin/product" className={menuClass("/admin/product")}>
@@ -106,13 +106,13 @@ const Sidebar = ({ children }: Props) => {
             </Link>
 
             {/* PAYMENT METHOD */}
-            <Link
+            {/* <Link
               to="/admin/payment-method"
               className={menuClass("/admin/payment-method")}
             >
               <CreditCard className="w-5 h-5" />
               <span className="font-medium">Payment Method</span>
-            </Link>
+            </Link> */}
           </nav>
         </div>
 

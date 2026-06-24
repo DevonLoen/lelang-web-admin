@@ -8,7 +8,7 @@ interface User {
   nik: string | null;
   identity_image_path: string | null;
   selfie_identity_image_path: string | null;
-    identity_image_link: string | null;
+  identity_image_link: string | null;
   selfie_identity_image_link: string | null;
 }
 

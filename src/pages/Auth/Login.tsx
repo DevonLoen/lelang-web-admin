@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState("admin@example.com");
+  const [email, setEmail] = useState("superadmin@gmail.com");
   const [password, setPassword] = useState("password123");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -35,8 +35,8 @@ const Login = () => {
       const payload = JSON.parse(atob(payloadBase64));
       console.log("Decoded token payload:", payload);
 
-      navigate("/admin/product");
-      window.location.href = "/admin/product";
+      navigate("/admin/dashboard");
+      window.location.href = "/admin/dashboard";
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {
