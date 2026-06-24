@@ -4,10 +4,12 @@ import { Image, X } from "lucide-react";
 interface User {
   id: number;
   fullname: string;
-  phone: string;
+  email: string;
   nik: string | null;
   identity_image_path: string | null;
   selfie_identity_image_path: string | null;
+    identity_image_link: string | null;
+  selfie_identity_image_link: string | null;
 }
 
 interface RoleRequest {
@@ -68,9 +70,9 @@ export default function BidderVerificationModal({
               Identity Image
             </label>
             <div className="w-full h-48 bg-white/80 rounded-xl border border-gray-300 flex flex-col items-center justify-center overflow-hidden shadow-sm">
-              {user.identity_image_path ? (
+              {user.identity_image_link ? (
                 <img
-                  src={user.identity_image_path}
+                  src={user.identity_image_link}
                   alt="Identity KTP"
                   className="w-full h-full object-cover"
                 />
@@ -89,9 +91,9 @@ export default function BidderVerificationModal({
               Selfie Identity Image
             </label>
             <div className="w-full h-48 bg-white/80 rounded-xl border border-gray-300 flex flex-col items-center justify-center overflow-hidden shadow-sm">
-              {user.selfie_identity_image_path ? (
+              {user.selfie_identity_image_link ? (
                 <img
-                  src={user.selfie_identity_image_path}
+                  src={user.selfie_identity_image_link}
                   alt="Selfie dengan KTP"
                   className="w-full h-full object-cover"
                 />
@@ -113,9 +115,9 @@ export default function BidderVerificationModal({
             <span>{user.fullname}</span>
           </div>
           <div className="grid grid-cols-[100px_10px_1fr]">
-            <span className="text-gray-600">Phone</span>
+            <span className="text-gray-600">Email</span>
             <span>:</span>
-            <span>{user.phone || "-"}</span>
+            <span>{user.email || "-"}</span>
           </div>
           <div className="grid grid-cols-[100px_10px_1fr]">
             <span className="text-gray-600">NIK</span>

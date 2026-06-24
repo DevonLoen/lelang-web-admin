@@ -1,6 +1,6 @@
 interface User {
   fullname: string;
-  phone: string;
+  email: string;
   nik: string | null;
 }
 
@@ -23,9 +23,9 @@ export default function BidderCard({ user, onClick }: BidderCardProps) {
         </div>
 
         <div className="grid grid-cols-[120px_10px_1fr] items-center">
-          <span className="text-gray-500">Phone Number</span>
+          <span className="text-gray-500">Email</span>
           <span>:</span>
-          <span className="text-gray-700">{user.phone || "-"}</span>
+          <span className="text-gray-700">{user.email || "-"}</span>
         </div>
 
         <div className="grid grid-cols-[120px_10px_1fr] items-center">

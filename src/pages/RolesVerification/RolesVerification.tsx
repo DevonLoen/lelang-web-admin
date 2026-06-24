@@ -7,13 +7,15 @@ import SellerVerificationModal from "./SellerVerificationModal";
 interface User {
   id: number;
   fullname: string;
-  phone: string;
+  email: string;
   nik: string | null;
   bank_account_number: string | null;
   bank_account_name: string | null;
   bank_name: string | null;
   identity_image_path: string | null;
   selfie_identity_image_path: string | null;
+  identity_image_link: string | null;
+  selfie_identity_image_link: string | null;
 }
 
 interface RoleRequest {

@@ -122,7 +122,7 @@ const Sidebar = ({ children }: Props) => {
           <div className="flex items-center gap-3 px-2 mb-4">
             <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
               <span className="text-white font-semibold">
-                {payload?.phone?.[0] || "U"}
+                {payload?.email?.[0] || "U"}
               </span>
             </div>
 
@@ -130,7 +130,7 @@ const Sidebar = ({ children }: Props) => {
               <p className="text-sm font-semibold text-white">
                 {payload?.roles[0] === "SUPERADMIN" ? "Superadmin" : "Admin"}
               </p>
-              <p className="text-xs text-blue-300">{payload?.phone}</p>
+              <p className="text-xs text-blue-300">{payload?.email}</p>
             </div>
           </div>
 

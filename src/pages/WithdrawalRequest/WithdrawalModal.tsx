@@ -1,7 +1,7 @@
 interface User {
   id: number;
   fullname: string;
-  phone: string;
+  email: string;
   bank_name: string | null;
   bank_account_name: string | null;
   bank_account_number: string | null;
@@ -62,9 +62,9 @@ export default function WithdrawalModal({
         {/* Detail Ringkasan Konten Data */}
         <div className="space-y-3.5 text-[14px] font-medium text-gray-800 mb-6 mt-2">
           <div className="grid grid-cols-[130px_10px_1fr]">
-            <span className="text-gray-600">Phone Number</span>
+            <span className="text-gray-600">Email</span>
             <span>:</span>
-            <span>{user.phone || "-"}</span>
+            <span>{user.email || "-"}</span>
           </div>
           <div className="grid grid-cols-[130px_10px_1fr]">
             <span className="text-gray-600">Amount</span>

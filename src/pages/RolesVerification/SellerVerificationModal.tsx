@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 interface User {
   id: number;
   fullname: string;
-  phone: string;
+  email: string;
   bank_account_number: string | null;
   bank_account_name: string | null;
   bank_name: string | null;
@@ -65,9 +65,9 @@ export default function SellerVerificationModal({
             <span>{user.fullname}</span>
           </div>
           <div className="grid grid-cols-[180px_10px_1fr]">
-            <span className="text-gray-600">Phone Number</span>
+            <span className="text-gray-600">Email</span>
             <span>:</span>
-            <span>{user.phone || "-"}</span>
+            <span>{user.email || "-"}</span>
           </div>
           <div className="grid grid-cols-[180px_10px_1fr]">
             <span className="text-gray-600">Bank Account Number</span>

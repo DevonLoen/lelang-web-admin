@@ -11,7 +11,7 @@ interface ProductListTableProps {
 interface ProductUser {
   id: number;
   fullname: string;
-  phone: string;
+  email: string;
   nik: string;
   is_verified: boolean;
 }
@@ -195,7 +195,7 @@ export function ProductListTable({
                     <th className="py-4 px-6 font-medium w-20">No</th>
                     <th className="py-4 px-6 font-medium">Product Name</th>
                     <th className="py-4 px-6 font-medium">Seller Name</th>
-                    <th className="py-4 px-6 font-medium">Phone</th>
+                    <th className="py-4 px-6 font-medium">Email</th>
                     <th className="py-4 px-6 font-medium">Condition</th>
                     <th className="py-4 px-6 font-medium">Global Status</th>
                     <th className="py-4 px-6 font-medium text-center w-36">
@@ -219,7 +219,7 @@ export function ProductListTable({
                         {product.user?.fullname || "-"}
                       </td>
                       <td className="py-4 px-6 font-mono text-xs text-gray-500">
-                        {product.user?.phone || "-"}
+                        {product.user?.email || "-"}
                       </td>
                       <td className="py-4 px-6">
                         <span

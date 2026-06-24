@@ -12,7 +12,7 @@ export default function AddAdminModal({
   const [isProcessing, setIsProcessing] = useState(false);
   const [form, setForm] = useState({
     fullname: "",
-    phone: "",
+    email: "",
     birth: "",
     gender: "MALE",
     password: "",
@@ -80,18 +80,18 @@ export default function AddAdminModal({
             />
           </div>
 
-          {/* Phone */}
+          {/* Email */}
           <div className="grid grid-cols-[110px_10px_1fr] items-center">
-            <span className="text-gray-600">Phone</span>
+            <span className="text-gray-600">Email</span>
             <span>:</span>
             <input
-              type="text"
-              name="phone"
+              type="email"
+              name="email"
               required
-              value={form.phone}
+              value={form.email}
               onChange={handleChange}
               className="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono font-normal text-gray-900"
-              placeholder="+6281234567891"
+              placeholder="admin@example.com"
             />
           </div>
 

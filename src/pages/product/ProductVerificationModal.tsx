@@ -4,7 +4,7 @@ import { X, Check, XCircle, AlertTriangle } from "lucide-react";
 interface User {
   id: number;
   fullname: string;
-  phone: string;
+  email: string;
   nik: string;
   is_verified: boolean;
 }
@@ -123,9 +123,9 @@ export default function ProductVerificationModal({
                 <span className="text-gray-900">{product.user.fullname}</span>
               </div>
               <div className="grid grid-cols-[120px_10px_1fr]">
-                <span className="text-gray-400">Phone Number</span>
+                <span className="text-gray-400">Email</span>
                 <span>:</span>
-                <span>{product.user.phone}</span>
+                <span>{product.user.email}</span>
               </div>
               <div className="grid grid-cols-[120px_10px_1fr]">
                 <span className="text-gray-400">NIK (KTP)</span>

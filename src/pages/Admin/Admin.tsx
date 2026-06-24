@@ -14,7 +14,7 @@ interface AdminRole {
 interface AdminUser {
   id: number;
   fullname: string;
-  phone: string;
+  email: string;
   birth: string;
   gender: "MALE" | "FEMALE";
   is_verified: boolean;
@@ -172,7 +172,7 @@ export default function AdminManagement() {
                   <tr className="border-b border-gray-100 bg-gray-50/70 text-gray-500 font-semibold text-[14px]">
                     <th className="py-4 px-6 font-medium w-20">No</th>
                     <th className="py-4 px-6 font-medium">Full Name</th>
-                    <th className="py-4 px-6 font-medium">Phone Number</th>
+                    <th className="py-4 px-6 font-medium">Email</th>
                     <th className="py-4 px-6 font-medium">Birth Date</th>
                     <th className="py-4 px-6 font-medium">Gender</th>
                     <th className="py-4 px-6 font-medium">Role</th>
@@ -192,7 +192,7 @@ export default function AdminManagement() {
                         {node.fullname}
                       </td>
                       <td className="py-4 px-6 font-mono text-xs text-gray-600">
-                        {node.phone}
+                        {node.email}
                       </td>
                       <td className="py-4 px-6">{formatDate(node.birth)}</td>
                       <td className="py-4 px-6">

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [phone, setPhone] = useState("+6281234567890");
+  const [email, setEmail] = useState("admin@example.com");
   const [password, setPassword] = useState("password123");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -19,11 +19,11 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ phone, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
-        throw new Error("Invalid phone or password");
+        throw new Error("Invalid email or password");
       }
 
       const res = await response.json();
@@ -74,11 +74,11 @@ const Login = () => {
 
         <form onSubmit={handleLogin} className="space-y-6">
           <input
-            type="text"
-            placeholder="Phone Number"
+            type="email"
+            placeholder="Email"
             className="w-full px-4 py-3 bg-gray-200 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-400 focus:outline-none"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
 

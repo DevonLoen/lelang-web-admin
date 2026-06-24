@@ -4,7 +4,7 @@ import WithdrawalModal from "./WithdrawalModal";
 interface User {
   id: number;
   fullname: string;
-  phone: string;
+  email: string;
   bank_name: string | null;
   bank_account_name: string | null;
   bank_account_number: string | null;
@@ -256,7 +256,7 @@ export default function WithdrawalRequest() {
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50/70 text-gray-500 font-semibold text-[14px]">
                     <th className="py-4 px-6 font-medium">ID</th>
-                    <th className="py-4 px-6 font-medium">Phone Number</th>
+                    <th className="py-4 px-6 font-medium">Email</th>
                     <th className="py-4 px-6 font-medium">Amount</th>
                     <th className="py-4 px-6 font-medium">Bank</th>
                     <th className="py-4 px-6 font-medium">Account No</th>
@@ -279,7 +279,7 @@ export default function WithdrawalRequest() {
                         <td className="py-4 px-6 font-medium text-gray-900">
                           {index + 1 + (page - 1) * limit}
                         </td>
-                        <td className="py-4 px-6">{node.user.phone || "-"}</td>
+                        <td className="py-4 px-6">{node.user.email || "-"}</td>
                         <td className="py-4 px-6 font-medium">
                           {formatRupiah(node.amount)}
                         </td>
