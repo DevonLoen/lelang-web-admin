@@ -1,16 +1,16 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/Auth/Login";
+import Login from "./pages/auth/Login";
 import AdminLayout from "./layout/AdminLayout";
 import { Toaster } from "./components/ui/toaster";
-import RolesVerification from "./pages/RolesVerification/RolesVerification";
-import WithdrawalRequest from "./pages/WithdrawalRequest/WithdrawalRequest";
-import PaymentMethod from "./pages/PaymentMethod/PaymentMethod";
-import AdminManagement from "./pages/Admin/Admin";
-import ProductRequestPage from "./pages/Product/RequestProduct";
-import ProductApprovedPage from "./pages/Product/VerfiedProduct";
-import ProductRejectedPage from "./pages/Product/RejectedProduct";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import ProductContent from "./pages/Product/ProductContent";
+import RolesVerification from "./pages/roles-verification/RolesVerification";
+import WithdrawalRequest from "./pages/withdrawal-request/WithdrawalRequest";
+import PaymentMethod from "./pages/payment-method/PaymentMethod";
+import AdminManagement from "./pages/admin/Admin";
+import ProductRequestPage from "./pages/product/RequestProduct";
+import ProductRejectedPage from "./pages/product/RejectedProduct";
+import Dashboard from "./pages/dashboard/Dashboard";
+import ProductContent from "./pages/product/ProductContent";
+import ProductApprovedPage from "./pages/product/VerfiedProduct";
 
 function App() {
   const token = localStorage.getItem("token");
