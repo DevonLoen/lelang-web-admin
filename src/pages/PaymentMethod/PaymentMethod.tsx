@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import PaymentMethodModal from "./PaymentMethodModal";
+import { apiClient } from "@/lib/apiClient";
 
 interface PaymentMethod {
   id: number;
@@ -40,44 +41,26 @@ export default function PaymentMethod() {
   );
   const [actionLoading, setActionLoading] = useState(false);
 
-  const getToken = (): string | null => {
-    return localStorage.getItem("token");
-  };
-
-  // 1. GET — List Payment Methods
+  // 1. GET/POST Filter Payment Methods
   const fetchPaymentMethods = async () => {
     setLoading(true);
     setError(null);
 
-    const token = getToken();
-
     try {
-      const response = await fetch(
-        "http://localhost:8080/admin/payment-methods/filter",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            accept: "application/json",
-          },
-          body: JSON.stringify({
-            page,
-            limit,
-            name: searchName || undefined,
-            code: searchCode || undefined,
-            type: searchType || undefined,
-          }),
-        },
-      );
+      const res = await apiClient<{
+        data: ApiResponse;
+      }>("/admin/payment-methods/filter", {
+        method: "POST",
+        body: JSON.stringify({
+          page,
+          limit,
+          name: searchName || undefined,
+          code: searchCode || undefined,
+          type: searchType || undefined,
+        }),
+      });
 
-      if (!response.ok) {
-        throw new Error("Failed to load payment methods");
-      }
-
-      const res = await response.json();
-      const data: ApiResponse = res.data;
-
+      const data = res.data;
       setMethods(data.nodes || []);
       setTotal(data.total || 0);
     } catch (err: any) {
@@ -95,22 +78,12 @@ export default function PaymentMethod() {
     is_active: boolean;
   }) => {
     setActionLoading(true);
-    const token = getToken();
 
     try {
-      const response = await fetch(
-        "http://localhost:8080/admin/payment-methods",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        },
-      );
-
-      if (!response.ok) throw new Error("Failed to create new payment method");
+      await apiClient("/admin/payment-methods", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
 
       setIsModalOpen(false);
       await fetchPaymentMethods();
@@ -121,38 +94,28 @@ export default function PaymentMethod() {
     }
   };
 
-  // 3. PATCH — Toggle Status Buka/Tutup (is_active)
+  // 3. PATCH — Toggle Status
   const handleToggleStatus = async (id: number, currentStatus: boolean) => {
-    const token = getToken();
-
-    // Optimistic UI Update biar terasa instan di mata user
+    // Optimistic UI Update
     setMethods((prev) =>
       prev.map((m) => (m.id === id ? { ...m, is_active: !currentStatus } : m)),
     );
 
     try {
-      const response = await fetch(
-        `http://localhost:8080/admin/payment-methods/${id}`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            is_active: !currentStatus,
-          }),
-        },
-      );
-
-      if (!response.ok) throw new Error("Failed to update execution status");
+      await apiClient(`/admin/payment-methods/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          is_active: !currentStatus,
+        }),
+      });
     } catch (err: any) {
       alert(err.message || "Failed to alter toggle status");
-      // Rollback jika request API bermasalah/gagal
+      // Rollback
       fetchPaymentMethods();
     }
   };
 
+  // 4. PATCH — Update Payment Method
   const handleUpdateMethod = async (
     id: number,
     payload: {
@@ -164,29 +127,14 @@ export default function PaymentMethod() {
   ) => {
     setActionLoading(true);
 
-    const token = getToken();
-
     try {
-      const response = await fetch(
-        `http://localhost:8080/admin/payment-methods/${id}`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            accept: "application/json",
-          },
-          body: JSON.stringify(payload),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update payment method");
-      }
+      await apiClient(`/admin/payment-methods/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      });
 
       setIsModalOpen(false);
       setSelectedMethod(null);
-
       await fetchPaymentMethods();
     } catch (err: any) {
       alert(err.message || "Failed to update payment method");
@@ -195,6 +143,7 @@ export default function PaymentMethod() {
     }
   };
 
+  // 5. Save Method (Create or Update)
   const handleSaveMethod = async (payload: {
     name: string;
     code: string;
@@ -210,41 +159,29 @@ export default function PaymentMethod() {
     }
   };
 
-  useEffect(() => {
-    fetchPaymentMethods();
-  }, [page]);
-
-  // Reset all filters
+  // 6. Reset Filters
   const handleResetFilters = async () => {
-    // Reset semua state
     setSearchName("");
     setSearchCode("");
     setSearchType("");
     setPage(1);
 
-    // Ambil token
-    const token = getToken();
-
-    // Fetch langsung dengan nilai kosong (tanpa membaca state)
     try {
       setLoading(true);
-      const response = await fetch(
-        "http://localhost:8080/admin/payment-methods/filter",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            page: 1, // Langsung kasih nilai 1
-            limit,
-          }),
-        },
-      );
+      const res = await apiClient<{
+        data: {
+          nodes: any[];
+          total: number;
+        };
+      }>("/admin/payment-methods/filter", {
+        method: "POST",
+        body: JSON.stringify({
+          page: 1,
+          limit,
+        }),
+      });
 
-      const res = await response.json();
-      const data: ApiResponse = res.data;
+      const data = res.data;
       setMethods(data.nodes || []);
       setTotal(data.total || 0);
     } catch (err: any) {
@@ -253,11 +190,17 @@ export default function PaymentMethod() {
       setLoading(false);
     }
   };
-  // Handle search
+
+  // 7. Handle Search
   const handleSearch = () => {
     setPage(1);
     fetchPaymentMethods();
   };
+
+  // 8. useEffect
+  useEffect(() => {
+    fetchPaymentMethods();
+  }, [page]);
 
   // Helper pencocokan penulisan kategori string agar rapi
   const formatCategory = (type: string) => {

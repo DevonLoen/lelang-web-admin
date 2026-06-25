@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import WithdrawalModal from "./WithdrawalModal";
+import { apiClient } from "@/lib/apiClient";
 
 interface User {
   id: number;
@@ -46,42 +47,24 @@ export default function WithdrawalRequest() {
   const [selectedNode, setSelectedNode] = useState<WithdrawalNode | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  const getToken = (): string | null => {
-    return localStorage.getItem("token");
-  };
-
   // 1. Fetch List Penarikan Dana
   const fetchWithdrawals = async () => {
     setLoading(true);
     setError(null);
 
-    const token = getToken();
-
     try {
-      const response = await fetch(
-        "http://localhost:8080/admin/withdrawal-requests/filter",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            accept: "application/json",
-          },
-          body: JSON.stringify({
-            limit,
-            page,
-            status: statusFilter || undefined, // Kirim undefined jika filter kosong
-          }),
-        },
-      );
+      const res = await apiClient<{
+        data: ApiResponse;
+      }>("/admin/withdrawal-requests/filter", {
+        method: "POST",
+        body: JSON.stringify({
+          limit,
+          page,
+          status: statusFilter || undefined,
+        }),
+      });
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch withdrawal records");
-      }
-
-      const res = await response.json();
-      const data: ApiResponse = res.data;
-
+      const data = res.data;
       setNodes(data.nodes || []);
       setTotal(data.total || 0);
     } catch (err: any) {
@@ -91,30 +74,22 @@ export default function WithdrawalRequest() {
     }
   };
 
-  // 2. Aksi PATCH Selesaikan Withdrawal
   const handleCompleteWithdrawal = async () => {
     if (!selectedNode) return;
 
     setActionLoading(true);
-    const token = getToken();
 
     try {
       const { user_id, id } = selectedNode;
-      const url = `http://localhost:8080/admin/users/${user_id}/withdrawal-requests/${id}/complete`;
-
-      const response = await fetch(url, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+      await apiClient(
+        `/admin/users/${user_id}/withdrawal-requests/${id}/complete`,
+        {
+          method: "PATCH",
         },
-      });
-
-      if (!response.ok)
-        throw new Error("Failed to finalize withdrawal transfer");
+      );
 
       setSelectedNode(null);
-      await fetchWithdrawals(); // Refresh list data setelah update sukses
+      await fetchWithdrawals();
     } catch (err: any) {
       alert(err.message || "Error performing action");
     } finally {

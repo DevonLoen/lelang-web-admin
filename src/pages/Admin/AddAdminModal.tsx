@@ -1,3 +1,4 @@
+import { apiClient } from "@/lib/apiClient";
 import React, { useState } from "react";
 
 interface AddAdminModalProps {
@@ -30,20 +31,12 @@ export default function AddAdminModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-    const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("http://localhost:8080/admin/users", {
+      await apiClient("/admin/users", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(form),
       });
-
-      if (!response.ok)
-        throw new Error("Failed to register new administrator account");
 
       await onSuccess();
     } catch (err: any) {

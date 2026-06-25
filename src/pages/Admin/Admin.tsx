@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ArrowLeft, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AddAdminModal from "./AddAdminModal";
+import { apiClient } from "@/lib/apiClient";
 
 interface AdminRole {
   id: number;
@@ -45,46 +46,28 @@ export default function AdminManagement() {
   // Modal manipulation state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const getToken = (): string | null => {
-    return localStorage.getItem("token");
-  };
-
-  // Fetch List Admin with POST method
   const fetchAdmins = async () => {
     setLoading(true);
     setError(null);
-    const token = getToken();
 
     try {
-      const response = await fetch(
-        "http://localhost:8080/admin/users/admins/filter",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            accept: "application/json",
-          },
-          body: JSON.stringify({
-            limit,
-            page,
-            sorts: [
-              {
-                direction: "desc",
-                field: "created_at",
-              },
-            ],
-          }),
-        },
-      );
+      const res = await apiClient<{
+        data: ApiResponse;
+      }>("/admin/users/admins/filter", {
+        method: "POST",
+        body: JSON.stringify({
+          limit,
+          page,
+          sorts: [
+            {
+              direction: "desc",
+              field: "created_at",
+            },
+          ],
+        }),
+      });
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch administrator records");
-      }
-
-      const res = await response.json();
-      const data: ApiResponse = res.data;
-
+      const data = res.data;
       setNodes(data.nodes || []);
       setTotal(data.total || 0);
     } catch (err: any) {

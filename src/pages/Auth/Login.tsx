@@ -1,3 +1,4 @@
+import { apiClient } from "@/lib/apiClient";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -14,25 +15,27 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8080/admin/auth/login", {
+      const res = await apiClient<{
+        data: {
+          token: string;
+        };
+      }>("/admin/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       });
 
-      if (!response.ok) {
-        throw new Error("Invalid email or password");
-      }
+      const token = res.data.token;
 
-      const res = await response.json();
-      const data = res.data;
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("token", token);
 
-      // --- Parse JWT payload ---
-      const payloadBase64 = data.token.split(".")[1]; // ambil bagian tengah
-      const payload = JSON.parse(atob(payloadBase64));
+      // Decode JWT (opsional)
+      const payload = JSON.parse(atob(token.split(".")[1]));
       console.log("Decoded token payload:", payload);
 
       navigate("/admin/dashboard");
@@ -50,12 +53,12 @@ const Login = () => {
       <div className="flex flex-col items-center justify-center w-1/2 text-white">
         <div className="flex items-center space-x-4">
           <img
-            src="/logo.jpg"
+            src="/bidify-mark.svg"
             alt="Logo"
             className="w-28 h-28 object-contain"
           />
           <h1 className="text-6xl font-extrabold italic tracking-wide">
-            LELANG
+            Bidify
           </h1>
         </div>
       </div>

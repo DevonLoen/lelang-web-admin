@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProductVerificationModal from "./ProductVerificationModal";
+import { apiClient } from "@/lib/apiClient";
 
 interface ProductListTableProps {
   statusFilter: "REQUEST" | "VERIFIED" | "REJECTED";
@@ -58,35 +59,28 @@ export function ProductListTable({
   const fetchProducts = async () => {
     setLoading(true);
     setError(null);
-    const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(
-        "http://localhost:8080/admin/products/filter",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            limit: limit,
-            page: page,
-            sorts: [
-              {
-                direction: "desc",
-                field: "created_at",
-              },
-            ],
-            status: statusFilter,
-          }),
-        },
-      );
+      const res = await apiClient<{
+        data: {
+          nodes: any[];
+          total: number;
+        };
+      }>("/admin/products/filter", {
+        method: "POST",
+        body: JSON.stringify({
+          limit: limit,
+          page: page,
+          sorts: [
+            {
+              direction: "desc",
+              field: "created_at",
+            },
+          ],
+          status: statusFilter,
+        }),
+      });
 
-      if (!response.ok)
-        throw new Error("Failed to fetch products filtering criteria");
-
-      const res = await response.json();
       setProducts((res.data.nodes || []).map(normalizeProduct));
       setTotal(res.data.total || 0);
     } catch (err: any) {
@@ -102,10 +96,7 @@ export function ProductListTable({
     message?: string,
   ) => {
     setActionLoading(true);
-    const token = localStorage.getItem("token");
 
-    // Sesuaikan path segmen endpoint dengan rute baru Go REST API:
-    // /admin/users/:userId/products/:productId/approve ATAU /admin/users/:userId/products/:productId/reject
     const actionSegment = targetStatus === "VERIFIED" ? "approve" : "reject";
     const userId = selectedProduct?.user?.id;
 
@@ -116,29 +107,16 @@ export function ProductListTable({
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:8080/admin/users/${userId}/products/${id}/${actionSegment}`,
+      await apiClient(
+        `/admin/users/${userId}/products/${id}/${actionSegment}`,
         {
           method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          // Masukkan request body message JSON jika statusnya REJECTED
           body:
             targetStatus === "REJECTED"
               ? JSON.stringify({ message })
               : undefined,
         },
       );
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.message ||
-            `Failed to change product status to ${targetStatus}`,
-        );
-      }
 
       setSelectedProduct(null);
       await fetchProducts();

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { TrendingUp, Award, DollarSign, Calendar } from "lucide-react";
+import { apiClient } from "@/lib/apiClient";
 
 interface DashboardDailyReport {
   date: string;
@@ -15,36 +16,21 @@ export default function Dashboard() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const getToken = (): string | null => {
-    return localStorage.getItem("token");
-  };
-
   const fetchDashboardData = async () => {
     setLoading(true);
     setError(null);
-    const token = getToken();
 
     try {
       const queryParams = new URLSearchParams();
       if (startDate) queryParams.append("start_date", startDate);
       if (endDate) queryParams.append("end_date", endDate);
 
-      const response = await fetch(
-        `http://localhost:8080/admin/auctions/dashboard-report?${queryParams.toString()}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            accept: "application/json",
-          },
-        },
-      );
+      const res = await apiClient<{
+        data: any[];
+      }>(`/admin/auctions/dashboard-report?${queryParams.toString()}`, {
+        method: "GET",
+      });
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch dashboard analytical report");
-      }
-
-      const res = await response.json();
       setReports(res.data || []);
     } catch (err: any) {
       setError(err.message || "An error occurred while loading dashboard");

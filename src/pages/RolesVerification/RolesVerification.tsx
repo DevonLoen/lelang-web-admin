@@ -3,6 +3,7 @@ import BidderCard from "./BidderCard";
 import SellerCard from "./SellerCard";
 import BidderVerificationModal from "./BidderVerificationModal";
 import SellerVerificationModal from "./SellerVerificationModal";
+import { apiClient } from "@/lib/apiClient";
 
 interface User {
   id: number;
@@ -53,56 +54,32 @@ export default function RolesVerification() {
 
   const limit = 9;
 
-  const getToken = (): string | null => {
-    return localStorage.getItem("token");
-  };
-
   const fetchRequests = async () => {
     setLoading(true);
     setError(null);
 
-    const token = getToken();
-    if (!token) {
-      setError("No authentication token found. Please login again.");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const response = await fetch(
-        `http://localhost:8080/admin/role-requests/list/${activeTab}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            accept: "application/json",
-          },
-          body: JSON.stringify({
-            limit,
-            page,
-            role: activeTab,
-            status: "REQUESTED",
-          }),
-        },
-      );
+      const res = await apiClient<{
+        data: ApiResponse;
+      }>(`/admin/role-requests/list/${activeTab}`, {
+        method: "POST",
+        body: JSON.stringify({
+          limit,
+          page,
+          role: activeTab,
+          status: "REQUESTED",
+        }),
+      });
 
-      if (response.status === 401) {
-        setError("Session expired. Please login again.");
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch requests");
-      }
-
-      const res = await response.json();
-      const data: ApiResponse = res.data;
-
+      const data = res.data;
       setRequests(data.nodes || []);
       setTotal(data.total || 0);
     } catch (err: any) {
-      setError(err.message || "Something went wrong");
+      if (err.message.includes("401")) {
+        setError("Session expired. Please login again.");
+      } else {
+        setError(err.message || "Something went wrong");
+      }
     } finally {
       setLoading(false);
     }
@@ -116,32 +93,20 @@ export default function RolesVerification() {
 
     setActionLoading(true);
     setError(null);
-    const token = getToken();
 
     try {
       const { user_id, id } = selectedRequest;
-      const url = `http://localhost:8080/admin/users/${user_id}/role-requests/${id}/${action}`;
+      const url = `/admin/users/${user_id}/role-requests/${id}/${action}`;
 
-      const config: RequestInit = {
+      const body =
+        action === "reject" && message
+          ? JSON.stringify({ message })
+          : undefined;
+
+      await apiClient(url, {
         method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      };
-
-      if (action === "reject" && message) {
-        config.body = JSON.stringify({ message: message });
-      }
-
-      const response = await fetch(url, config);
-
-      if (response.status === 401) {
-        throw new Error("Session expired. Please login again.");
-      }
-      if (!response.ok) {
-        throw new Error(`Failed to ${action} request`);
-      }
+        body,
+      });
 
       setSelectedRequest(null);
       await fetchRequests();
