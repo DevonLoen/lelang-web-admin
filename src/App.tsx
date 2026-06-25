@@ -10,7 +10,7 @@ import ProductRequestPage from "./pages/Product/RequestProduct";
 import ProductApprovedPage from "./pages/Product/VerfiedProduct";
 import ProductRejectedPage from "./pages/Product/RejectedProduct";
 import Dashboard from "./pages/Dashboard/Dashboard";
-import Product from "./pages/Product/Product";
+import ProductContent from "./pages/Product/ProductContent";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -28,7 +28,7 @@ function App() {
           {/* <Route path="dashboard" element={<Dashboard />} /> */}
           <Route path="master-admin" element={<AdminManagement />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="product" element={<Product />} />
+          <Route path="product" element={<ProductContent />} />
           <Route path="product/request" element={<ProductRequestPage />} />
           <Route path="product/approved" element={<ProductApprovedPage />} />
           <Route path="product/rejected" element={<ProductRejectedPage />} />

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ArrowLeft, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AddAdminModal from "./AddAdminModal";
-import { apiClient } from "@/lib/apiClient";
+import { apiClient } from "../../lib/apiClient";
 
 interface AdminRole {
   id: number;

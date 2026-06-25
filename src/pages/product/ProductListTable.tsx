@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProductVerificationModal from "./ProductVerificationModal";
-import { apiClient } from "@/lib/apiClient";
+import { apiClient } from "../../lib/apiClient";
 
 interface ProductListTableProps {
   statusFilter: "REQUEST" | "VERIFIED" | "REJECTED";

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import PaymentMethodModal from "./PaymentMethodModal";
-import { apiClient } from "@/lib/apiClient";
-
+import { apiClient } from "../../lib/apiClient";
 interface PaymentMethod {
   id: number;
   name: string;
