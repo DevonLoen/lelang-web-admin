@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import WithdrawalModal from "./WithdrawalModal";
-import { apiClient } from "@/lib/apiClient";
+import { apiClient } from "../../lib/apiClient";
 
 interface User {
   id: number;

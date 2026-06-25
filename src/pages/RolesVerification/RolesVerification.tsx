@@ -3,7 +3,7 @@ import BidderCard from "./BidderCard";
 import SellerCard from "./SellerCard";
 import BidderVerificationModal from "./BidderVerificationModal";
 import SellerVerificationModal from "./SellerVerificationModal";
-import { apiClient } from "@/lib/apiClient";
+import { apiClient } from "../../lib/apiClient";
 
 interface User {
   id: number;

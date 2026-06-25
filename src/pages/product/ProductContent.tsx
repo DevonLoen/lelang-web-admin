@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { ClipboardCheck, CheckCircle2, XCircle } from "lucide-react";
 import Breadcrumb from "../../components/breadcrumb";
 
-const Product = () => {
+const ProductContent = () => {
   const menus = [
     {
       title: "Request Verification",
@@ -45,4 +45,4 @@ const Product = () => {
   );
 };
 
-export default Product;
+export default ProductContent;

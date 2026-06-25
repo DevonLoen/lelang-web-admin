@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/apiClient";
+import { apiClient } from "../../lib/apiClient";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 

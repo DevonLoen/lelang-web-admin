@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { TrendingUp, Award, DollarSign, Calendar } from "lucide-react";
-import { apiClient } from "@/lib/apiClient";
+import { apiClient } from "../../lib/apiClient";
 
 interface DashboardDailyReport {
   date: string;
