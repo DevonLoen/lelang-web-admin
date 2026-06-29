@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { X, Check, XCircle, AlertTriangle, Send } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, Check, XCircle, AlertTriangle, Send, Clock } from "lucide-react";
+import { apiClient } from "../../lib/apiClient";
 
 interface User {
   id: number;
@@ -19,6 +20,16 @@ interface ProductNode {
   image_links: string[];
   created_at: string;
   user: User;
+}
+
+// Tambahkan interface untuk History
+interface StatusHistory {
+  id: number;
+  product_id: number;
+  status: "REQUEST" | "VERIFIED" | "REJECTED";
+  message?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface ProductModalProps {
@@ -43,6 +54,42 @@ export default function ProductVerificationModal({
   const [showApproveConfirm, setShowApproveConfirm] = useState(false);
   const [rejectMessage, setRejectMessage] = useState("");
 
+  // State untuk menyimpan data history dan loading history
+  const [histories, setHistories] = useState<StatusHistory[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      setIsLoadingHistory(true);
+      try {
+        // Menggunakan apiClient dengan method POST sesuai standar proyekmu
+        const res = await apiClient<{
+          data: {
+            histories: StatusHistory[];
+          };
+        }>(`/admin/products/${product.id}/histories`, {
+          method: "POST",
+          body: JSON.stringify({}), // Kirim body kosong jika endpoint-nya tidak butuh payload filter tambahan
+        });
+
+        if (res?.data?.histories) {
+          setHistories(res.data.histories);
+        }
+      } catch (err: any) {
+        console.error(
+          "Failed to fetch product status histories:",
+          err.message || err,
+        );
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    };
+
+    if (product?.id) {
+      fetchHistory();
+    }
+  }, [product.id]);
+
   const handleConfirmReject = () => {
     if (!rejectMessage.trim()) {
       alert("Please provide a rejection message reason.");
@@ -55,6 +102,18 @@ export default function ProductVerificationModal({
   const handleConfirmApprove = () => {
     setShowApproveConfirm(false);
     onAction(product.id, "VERIFIED");
+  };
+
+  // Helper untuk styling badge status di timeline
+  const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case "VERIFIED":
+        return "bg-green-100 text-green-700 border-green-200";
+      case "REJECTED":
+        return "bg-red-100 text-red-700 border-red-200";
+      default:
+        return "bg-amber-100 text-amber-700 border-amber-200";
+    }
   };
 
   return (
@@ -167,6 +226,67 @@ export default function ProductVerificationModal({
           </div>
 
           {/* Section 2: Seller Profile */}
+
+          {/* BARU: Section 3 - Status Histories Timeline */}
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-3">
+              Status History Logs
+            </h3>
+            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-4">
+              {isLoadingHistory ? (
+                <div className="flex items-center justify-center py-4 gap-2 text-gray-400 text-xs">
+                  <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+                  Loading history logs...
+                </div>
+              ) : histories.length === 0 ? (
+                <p className="text-xs text-gray-400 italic text-center py-2">
+                  No history data available.
+                </p>
+              ) : (
+                <div className="relative border-l border-gray-200 ml-2.5 pl-4 space-y-4">
+                  {histories.map((history) => (
+                    <div key={history.id} className="relative text-xs">
+                      {/* Titik Timeline */}
+                      <span className="absolute -left-[22.5px] top-1 flex h-3 w-3 items-center justify-center rounded-full bg-white border border-gray-300 shadow-sm">
+                        <span className="h-1.5 w-1.5 rounded-full bg-gray-400" />
+                      </span>
+
+                      {/* Konten Timeline */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          className={`px-2 py-0.5 rounded font-bold border text-[10px] ${getStatusBadgeClass(history.status)}`}
+                        >
+                          {history.status}
+                        </span>
+                        <span className="text-gray-400 font-mono text-[11px] flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {new Date(history.created_at).toLocaleString(
+                            "id-ID",
+                            {
+                              dateStyle: "medium",
+                              timeStyle: "short",
+                            },
+                          )}
+                        </span>
+                      </div>
+
+                      {/* Pesan Penolakan jika Status REJECTED */}
+                      {history.status === "REJECTED" && history.message && (
+                        <div className="mt-1.5 p-2 bg-red-50/50 text-red-600 rounded-lg border border-red-100 max-w-md">
+                          <span className="font-semibold block text-[11px] text-red-700 mb-0.5">
+                            Reason:
+                          </span>
+                          <p className="leading-relaxed text-gray-700">
+                            {history.message}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-3">
               Seller Details

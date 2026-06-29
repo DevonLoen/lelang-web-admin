@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import WithdrawalModal from "./WithdrawalModal";
+import UserWithdrawalHistoryModal from "./UserWithdrawalHistoryModal";
 import { apiClient } from "../../lib/apiClient";
 
 interface User {
@@ -46,6 +47,13 @@ export default function WithdrawalRequest() {
   // Modal interaction state
   const [selectedNode, setSelectedNode] = useState<WithdrawalNode | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+
+  // User history modal state
+  const [historyModal, setHistoryModal] = useState<{
+    userId: number;
+    userName: string;
+    userEmail: string;
+  } | null>(null);
 
   // 1. Fetch List Penarikan Dana
   const fetchWithdrawals = async () => {
@@ -100,7 +108,7 @@ export default function WithdrawalRequest() {
   // Handle filter change
   const handleFilterChange = (status: "REQUESTED" | "COMPLETED" | "") => {
     setStatusFilter(status);
-    setPage(1); // Reset ke halaman pertama saat filter berubah
+    setPage(1);
   };
 
   useEffect(() => {
@@ -225,7 +233,6 @@ export default function WithdrawalRequest() {
           </div>
         ) : (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)] overflow-hidden">
-            {/* Responsiveness wrapper untuk Table */}
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -254,7 +261,20 @@ export default function WithdrawalRequest() {
                         <td className="py-4 px-6 font-medium text-gray-900">
                           {index + 1 + (page - 1) * limit}
                         </td>
-                        <td className="py-4 px-6">{node.user.email || "-"}</td>
+                        <td className="py-4 px-6">
+                          <button
+                            onClick={() =>
+                              setHistoryModal({
+                                userId: node.user.id,
+                                userName: node.user.fullname,
+                                userEmail: node.user.email,
+                              })
+                            }
+                            className="text-blue-600 hover:text-blue-800 hover:underline transition-all text-left font-medium cursor-pointer"
+                          >
+                            {node.user.email || "-"}
+                          </button>
+                        </td>
                         <td className="py-4 px-6 font-medium">
                           {formatRupiah(node.amount)}
                         </td>
@@ -262,7 +282,7 @@ export default function WithdrawalRequest() {
                           {node.user.bank_name || "BCA"}
                         </td>
                         <td className="py-4 px-6 font-mono text-gray-600">
-                          {node.user.bank_account_number || "8349561854"}
+                          {node.user.bank_account_number || "-"}
                         </td>
                         <td className="py-4 px-6 text-gray-900">
                           {node.user.fullname}
@@ -270,13 +290,9 @@ export default function WithdrawalRequest() {
                         <td className="py-4 px-6 text-gray-500">
                           {formatDate(node.CreatedAt)}
                         </td>
-
-                        {/* Status dengan badge yang lebih baik */}
                         <td className="py-4 px-6">
                           {getStatusBadge(node.status)}
                         </td>
-
-                        {/* Action buttons render logic */}
                         <td className="py-4 px-6 text-center">
                           {isRequested ? (
                             <button
@@ -335,13 +351,23 @@ export default function WithdrawalRequest() {
           </div>
         )}
 
-        {/* Modal Controller */}
+        {/* Withdrawal Modal */}
         {selectedNode && (
           <WithdrawalModal
             node={selectedNode}
             onClose={() => setSelectedNode(null)}
             onConfirmComplete={handleCompleteWithdrawal}
             isProcessing={actionLoading}
+          />
+        )}
+
+        {/* User History Modal - Tanpa Pagination */}
+        {historyModal && (
+          <UserWithdrawalHistoryModal
+            userId={historyModal.userId}
+            userName={historyModal.userName}
+            userEmail={historyModal.userEmail}
+            onClose={() => setHistoryModal(null)}
           />
         )}
       </div>
