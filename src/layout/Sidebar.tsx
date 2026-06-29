@@ -8,6 +8,10 @@ import {
   IdCard,
   HandCoins,
   LayoutDashboard,
+  Banknote,
+  Gavel,
+  BadgeDollarSign,
+  Scale,
 } from "lucide-react";
 
 import { parseJwt } from "../utils/parseJwt";
@@ -79,6 +83,12 @@ const Sidebar = ({ children }: Props) => {
             >
               <LayoutDashboard className="w-5 h-5" />
               <span className="font-medium">Dashboard</span>
+            </Link>
+
+            {/* Auction */}
+            <Link to="/admin/auction" className={menuClass("/admin/auction")}>
+              <Scale className="w-5 h-5" />
+              <span className="font-medium">Auction</span>
             </Link>
 
             {/* PRODUCT */}

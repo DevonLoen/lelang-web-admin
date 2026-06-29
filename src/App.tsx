@@ -7,10 +7,11 @@ import WithdrawalRequest from "./pages/withdrawal-request/WithdrawalRequest";
 import PaymentMethod from "./pages/payment-method/PaymentMethod";
 import AdminManagement from "./pages/admin/Admin";
 import ProductRequestPage from "./pages/product/RequestProduct";
-import ProductRejectedPage from "./pages/product/RejectedProduct";
 import Dashboard from "./pages/dashboard/Dashboard";
 import ProductContent from "./pages/product/ProductContent";
 import ProductApprovedPage from "./pages/product/VerfiedProduct";
+import AuctionManagement from "./pages/auction/Auction";
+import ProductRejectedPage from "./pages/product/RejectedProduct";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -27,6 +28,7 @@ function App() {
         >
           {/* <Route path="dashboard" element={<Dashboard />} /> */}
           <Route path="master-admin" element={<AdminManagement />} />
+          <Route path="auction" element={<AuctionManagement />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="product" element={<ProductContent />} />
           <Route path="product/request" element={<ProductRequestPage />} />
