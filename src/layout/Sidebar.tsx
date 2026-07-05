@@ -67,29 +67,31 @@ const Sidebar = ({ children }: Props) => {
           <nav className="mt-6 flex flex-col gap-2">
             {/* SUPER ADMIN */}
             {payload?.roles?.[0] === "SUPERADMIN" && (
-              <Link
-                to="/admin/master-admin"
-                className={menuClass("/admin/master-admin")}
-              >
-                <User className="w-5 h-5" />
-                <span className="font-medium">Admin</span>
-              </Link>
+              <>
+                <Link
+                  to="/admin/master-admin"
+                  className={menuClass("/admin/master-admin")}
+                >
+                  <User className="w-5 h-5" />
+                  <span className="font-medium">Admin</span>
+                </Link>
+                <Link
+                  to="/admin/dashboard"
+                  className={menuClass("/admin/dashboard")}
+                >
+                  <LayoutDashboard className="w-5 h-5" />
+                  <span className="font-medium">Dashboard</span>
+                </Link>
+              </>
             )}
 
             {/* DASHBOARD */}
-            <Link
-              to="/admin/dashboard"
-              className={menuClass("/admin/dashboard")}
-            >
-              <LayoutDashboard className="w-5 h-5" />
-              <span className="font-medium">Dashboard</span>
-            </Link>
 
             {/* Auction */}
-            <Link to="/admin/auction" className={menuClass("/admin/auction")}>
+            {/* <Link to="/admin/auction" className={menuClass("/admin/auction")}>
               <Scale className="w-5 h-5" />
               <span className="font-medium">Auction</span>
-            </Link>
+            </Link> */}
 
             {/* PRODUCT */}
             <Link to="/admin/product" className={menuClass("/admin/product")}>

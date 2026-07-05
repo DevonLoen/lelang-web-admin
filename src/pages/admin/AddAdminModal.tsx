@@ -14,7 +14,7 @@ export default function AddAdminModal({
   const [form, setForm] = useState({
     fullname: "",
     email: "",
-    birth: "",
+    birth: "2000-01-01",
     gender: "MALE",
     password: "",
   });
@@ -89,7 +89,7 @@ export default function AddAdminModal({
           </div>
 
           {/* Birth Date */}
-          <div className="grid grid-cols-[110px_10px_1fr] items-center">
+          {/* <div className="grid grid-cols-[110px_10px_1fr] items-center">
             <span className="text-gray-600">Birth Date</span>
             <span>:</span>
             <input
@@ -100,10 +100,10 @@ export default function AddAdminModal({
               onChange={handleChange}
               className="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-normal text-gray-900"
             />
-          </div>
+          </div> */}
 
           {/* Gender */}
-          <div className="grid grid-cols-[110px_10px_1fr] items-center">
+          {/* <div className="grid grid-cols-[110px_10px_1fr] items-center">
             <span className="text-gray-600">Gender</span>
             <span>:</span>
             <select
@@ -115,7 +115,7 @@ export default function AddAdminModal({
               <option value="MALE">MALE</option>
               <option value="FEMALE">FEMALE</option>
             </select>
-          </div>
+          </div> */}
 
           {/* Password */}
           <div className="grid grid-cols-[110px_10px_1fr] items-center">
