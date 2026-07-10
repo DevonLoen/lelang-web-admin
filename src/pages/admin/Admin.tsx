@@ -156,10 +156,10 @@ export default function AdminManagement() {
                     <th className="py-4 px-6 font-medium w-20">No</th>
                     <th className="py-4 px-6 font-medium">Full Name</th>
                     <th className="py-4 px-6 font-medium">Email</th>
-                    <th className="py-4 px-6 font-medium">Birth Date</th>
-                    <th className="py-4 px-6 font-medium">Gender</th>
+                    {/* <th className="py-4 px-6 font-medium">Birth Date</th>
+                    <th className="py-4 px-6 font-medium">Gender</th> */}
                     <th className="py-4 px-6 font-medium">Role</th>
-                    <th className="py-4 px-6 font-medium">Join Date</th>
+                    <th className="py-4 px-6 font-medium">Created At</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 text-[14px] text-gray-700">
@@ -177,7 +177,7 @@ export default function AdminManagement() {
                       <td className="py-4 px-6 font-mono text-xs text-gray-600">
                         {node.email}
                       </td>
-                      <td className="py-4 px-6">{formatDate(node.birth)}</td>
+                      {/* <td className="py-4 px-6">{formatDate(node.birth)}</td>
                       <td className="py-4 px-6">
                         <span
                           className={`px-2 py-0.5 rounded text-xs font-bold ${
@@ -188,7 +188,7 @@ export default function AdminManagement() {
                         >
                           {node.gender === "MALE" ? "Male" : "Female"}
                         </span>
-                      </td>
+                      </td> */}
                       <td className="py-4 px-6">
                         <span className="text-blue-600 font-semibold bg-blue-50 border border-blue-100 px-2 py-0.5 rounded text-xs">
                           {node.roles?.[0]?.role || "ADMIN"}

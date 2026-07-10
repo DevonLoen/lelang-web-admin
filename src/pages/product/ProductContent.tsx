@@ -26,7 +26,7 @@ const ProductContent = () => {
 
   return (
     <div className="p-6 bg-gray-100 min-h-full">
-      <Breadcrumb paths={["Product"]} />
+      <Breadcrumb paths={["Product Management"]} />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {menus.map((menu) => (
