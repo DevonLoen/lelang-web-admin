@@ -38,8 +38,8 @@ const Login = () => {
       const payload = JSON.parse(atob(token.split(".")[1]));
       console.log("Decoded token payload:", payload);
 
-      navigate("/admin/dashboard");
-      window.location.href = "/admin/dashboard";
+      navigate("/admin/product");
+      window.location.href = "/admin/product";
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {
